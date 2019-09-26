@@ -55,6 +55,7 @@ import ImageMapper from 'react-image-mapper';
 |**active**|*bool*|Enable/Disable highlighting|`true`|
 |**imgWidth**|*number*|Original image width|`null`|
 |**children**|*node*|Child nodes to be rendered inside the container (after the image, the canvas and the map)|`null`|
+|**imgRef**|*ref*|A ref forwarded to the img element inside the ImageMapper component|`React.createRef()`|
 
 |Props callbacks|Called on|signature|
 |---|---|---|

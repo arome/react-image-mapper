@@ -65,24 +65,24 @@ export default class ImageMapper extends Component {
 	}
 
 	initCanvases() {
-		if (this.props.width) this.img.width = this.props.width;
+		if (this.props.width) this.props.imgRef.current.width = this.props.width;
 
-		if (this.props.height) this.img.height = this.props.height;
-		
-		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`);
-		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`);
-		
+		if (this.props.height) this.props.imgRef.current.height = this.props.height;
+
+		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.props.imgRef.current.clientWidth} ${this.props.height || this.props.imgRef.current.clientHeight}`);
+		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.props.imgRef.current.clientWidth} ${this.props.height || this.props.imgRef.current.clientHeight}`);
+
 		this.container.style.width =
-			(this.props.width || this.img.clientWidth) + 'px';
+			(this.props.width || this.props.imgRef.current.clientWidth) + 'px';
 		this.container.style.height =
-			(this.props.height || this.img.clientHeight) + 'px';
-		
+			(this.props.height || this.props.imgRef.current.clientHeight) + 'px';
+
 		if (this.props.onLoad) this.props.onLoad();
 	}
 
 	hoverOn(area, index, event) {
 		if (this.props.onMouseEnter) this.props.onMouseEnter(area, index, event);
-		
+
 		this.setState({
 			currentlyHoveredArea: area,
 		});
@@ -90,7 +90,7 @@ export default class ImageMapper extends Component {
 
 	hoverOff(area, index, event) {
 		if (this.props.onMouseLeave) this.props.onMouseLeave(area, index, event);
-		
+
 		this.setState({
 			currentlyHoveredArea: undefined,
 		});
@@ -133,13 +133,13 @@ export default class ImageMapper extends Component {
 			this.props.onImageMouseMove(area, index, event);
 		}
 	}
-	
+
 	imageMouseDown(area, index, event) {
 		if (this.props.onImageMouseDown) {
 			this.props.onImageMouseDown(area, index, event);
 		}
 	}
-	
+
 	imageMouseUp(area, index, event) {
 		if (this.props.onImageMouseUp) {
 			this.props.onImageMouseUp(area, index, event);
@@ -152,7 +152,7 @@ export default class ImageMapper extends Component {
 		const scale = width && imgWidth && imgWidth > 0 ? width / imgWidth : 1;
 		return coords.map(coord => coord * scale);
 	}
-	
+
 	mapCoordsToSvgFormat(coords) {
 		return coords.reduce(
 			(a, v, i, s) => (i % 2 ? a : [...a, s.slice(i, i + 2)]),
@@ -183,7 +183,7 @@ export default class ImageMapper extends Component {
 			}
 		}
 	}
-	
+
 	getExtendedAreas() {
 		return this.state.map.areas.map((area) => {
 			const scaledCoords = this.scaleCoords(area.coords);
@@ -191,7 +191,7 @@ export default class ImageMapper extends Component {
 			return { ...area, scaledCoords, center };
 		});
 	}
-	
+
 	getMatchingSvgElementForShape(shape, coords, props) {
 		const scaledCoords = this.scaleCoords(coords);
 		switch (shape) {
@@ -224,7 +224,7 @@ export default class ImageMapper extends Component {
 				);
 		}
 	}
-	
+
 	renderCurrentlyHoveredSvgElement() {
 		const area = this.state.currentlyHoveredArea;
 		if (!(area)) return null;
@@ -235,7 +235,7 @@ export default class ImageMapper extends Component {
 			strokeWidth: area.lineWidth || this.props.lineWidth,
 		});
 	}
-	
+
 	renderPrefillSvgElements() {
 		return this.state.map.areas.map((area, index) => {
 			if (!area.preFillColor) return null;
@@ -266,7 +266,7 @@ export default class ImageMapper extends Component {
 			);
 		});
 	}
-	
+
 	renderChildren() {
 		if (this.props.renderChildren) {
 			return this.props.renderChildren();
@@ -282,7 +282,7 @@ export default class ImageMapper extends Component {
 					src={this.props.src}
 					useMap={`#${this.state.map.name}`}
 					alt=""
-					ref={node => (this.img = node)}
+					ref={this.props.imgRef}
 					onLoad={this.initCanvases}
 					onClick={this.imageClick.bind(this)}
 					onMouseMove={this.imageMouseMove.bind(this)}
@@ -312,7 +312,8 @@ ImageMapper.defaultProps = {
 		areas: [],
 		name: 'image-map-' + Math.random()
 	},
-	strokeColor: 'rgba(0, 0, 0, 0.5)'
+	strokeColor: 'rgba(0, 0, 0, 0.5)',
+	imgRef: React.createRef()
 };
 
 ImageMapper.propTypes = {
@@ -338,6 +339,11 @@ ImageMapper.propTypes = {
 	onExtendedAreasCreated: PropTypes.func,
 	onMouseEnter: PropTypes.func,
 	onMouseLeave: PropTypes.func,
+
+	imgRef: PropTypes.oneOfType([
+		PropTypes.func,
+		PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+	]),
 
 	map: PropTypes.shape({
 		areas: PropTypes.arrayOf(

@@ -1532,15 +1532,15 @@ var ImageMapper = (function (_Component) {
 	}, {
 		key: 'initCanvases',
 		value: function initCanvases() {
-			if (this.props.width) this.img.width = this.props.width;
+			if (this.props.width) this.props.imgRef.current.width = this.props.width;
 
-			if (this.props.height) this.img.height = this.props.height;
+			if (this.props.height) this.props.imgRef.current.height = this.props.height;
 
-			this.prefillSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.img.clientWidth) + ' ' + (this.props.height || this.img.clientHeight));
-			this.hoverSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.img.clientWidth) + ' ' + (this.props.height || this.img.clientHeight));
+			this.prefillSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.props.imgRef.current.clientWidth) + ' ' + (this.props.height || this.props.imgRef.current.clientHeight));
+			this.hoverSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.props.imgRef.current.clientWidth) + ' ' + (this.props.height || this.props.imgRef.current.clientHeight));
 
-			this.container.style.width = (this.props.width || this.img.clientWidth) + 'px';
-			this.container.style.height = (this.props.height || this.img.clientHeight) + 'px';
+			this.container.style.width = (this.props.width || this.props.imgRef.current.clientWidth) + 'px';
+			this.container.style.height = (this.props.height || this.props.imgRef.current.clientHeight) + 'px';
 
 			if (this.props.onLoad) this.props.onLoad();
 		}
@@ -1783,9 +1783,7 @@ var ImageMapper = (function (_Component) {
 					src: this.props.src,
 					useMap: '#' + this.state.map.name,
 					alt: '',
-					ref: function (node) {
-						return _this6.img = node;
-					},
+					ref: this.props.imgRef,
 					onLoad: this.initCanvases,
 					onClick: this.imageClick.bind(this),
 					onMouseMove: this.imageMouseMove.bind(this),
@@ -1829,7 +1827,8 @@ ImageMapper.defaultProps = {
 		areas: [],
 		name: 'image-map-' + Math.random()
 	},
-	strokeColor: 'rgba(0, 0, 0, 0.5)'
+	strokeColor: 'rgba(0, 0, 0, 0.5)',
+	imgRef: _react2['default'].createRef()
 };
 
 ImageMapper.propTypes = {
@@ -1855,6 +1854,8 @@ ImageMapper.propTypes = {
 	onExtendedAreasCreated: _propTypes2['default'].func,
 	onMouseEnter: _propTypes2['default'].func,
 	onMouseLeave: _propTypes2['default'].func,
+
+	imgRef: _propTypes2['default'].oneOfType([_propTypes2['default'].func, _propTypes2['default'].shape({ current: _propTypes2['default'].instanceOf(Element) })]),
 
 	map: _propTypes2['default'].shape({
 		areas: _propTypes2['default'].arrayOf(_propTypes2['default'].shape({
