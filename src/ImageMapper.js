@@ -29,6 +29,10 @@ export default class ImageMapper extends Component {
 			'width',
 			'renderChildren'
 		];
+		this.imgRef = React.createRef();
+		if (this.props.imgRef) {
+			this.imgRef = this.props.imgRef;
+		}
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
@@ -65,17 +69,17 @@ export default class ImageMapper extends Component {
 	}
 
 	initCanvases() {
-		if (this.props.width) this.props.imgRef.current.width = this.props.width;
+		if (this.props.width) this.imgRef.current.width = this.props.width;
 
-		if (this.props.height) this.props.imgRef.current.height = this.props.height;
+		if (this.props.height) this.imgRef.current.height = this.props.height;
 
-		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.props.imgRef.current.clientWidth} ${this.props.height || this.props.imgRef.current.clientHeight}`);
-		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.props.imgRef.current.clientWidth} ${this.props.height || this.props.imgRef.current.clientHeight}`);
+		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
+		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
 
 		this.container.style.width =
-			(this.props.width || this.props.imgRef.current.clientWidth) + 'px';
+			(this.props.width || this.imgRef.current.clientWidth) + 'px';
 		this.container.style.height =
-			(this.props.height || this.props.imgRef.current.clientHeight) + 'px';
+			(this.props.height || this.imgRef.current.clientHeight) + 'px';
 
 		if (this.props.onLoad) this.props.onLoad();
 	}
@@ -282,7 +286,7 @@ export default class ImageMapper extends Component {
 					src={this.props.src}
 					useMap={`#${this.state.map.name}`}
 					alt=""
-					ref={this.props.imgRef}
+					ref={this.imgRef}
 					onLoad={this.initCanvases}
 					onClick={this.imageClick.bind(this)}
 					onMouseMove={this.imageMouseMove.bind(this)}
@@ -313,7 +317,7 @@ ImageMapper.defaultProps = {
 		name: 'image-map-' + Math.random()
 	},
 	strokeColor: 'rgba(0, 0, 0, 0.5)',
-	imgRef: React.createRef()
+	imgRef: undefined,
 };
 
 ImageMapper.propTypes = {
