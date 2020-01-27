@@ -17,55 +17,26 @@ export default class ImageMapper extends Component {
 			img: { ...absPos, zIndex: 1, userSelect: 'none' },
 			map: (props.onClick && { cursor: 'pointer' }) || undefined
 		};
-		// Props watched for changes to trigger update
-		this.watchedProps = [
-			'active',
-			'fillColor',
-			'height',
-			'imgWidth',
-			'lineWidth',
-			'src',
-			'strokeColor',
-			'width',
-			'renderChildren'
-		];
 		this.imgRef = React.createRef();
 		if (this.props.imgRef) {
 			this.imgRef = this.props.imgRef;
 		}
-	}
-
-	shouldComponentUpdate(nextProps, nextState) {
-		if (!(isEqual(this.state.currentlyHoveredArea, nextState.currentlyHoveredArea))) return true;
-		const propChanged = this.watchedProps.some(
-			prop => this.props[prop] !== nextProps[prop]
-		);
-		const result = !isEqual(this.props.map, this.state.map) || propChanged;
-		return result;
-	}
-
-	UNSAFE_componentWillMount() {
-		this.updateCacheMap();
-	}
-
-	updateCacheMap() {
-		this.setState(
-			{ map: Object.assign({}, this.props.map) },
-			this.initCanvases
-		);
-	}
-
-	componentDidUpdate() {
-		if (!isEqual(this.props.map, this.state.map)) {
-			this.setState({
-				currentlyHoveredArea: undefined,
-			});
-		}
-		this.updateCacheMap();
-		this.initCanvases();
 		if (this.props.onExtendedAreasCreated) {
 			this.props.onExtendedAreasCreated(this.getExtendedAreas());
 		}
+	}
+
+	componentDidUpdate(prevProps) {
+		if (!isEqual(prevProps, this.props)) {
+			// eslint-disable-next-line react/no-did-update-set-state
+			this.setState({
+				currentlyHoveredArea: undefined,
+			});
+			if (!isEqual(prevProps.map, this.props.map)) {
+				this.props.onExtendedAreasCreated(this.getExtendedAreas());
+			}
+		}
+		this.initCanvases();
 	}
 
 	initCanvases() {
@@ -104,6 +75,9 @@ export default class ImageMapper extends Component {
 		if (this.props.onClick) {
 			event.preventDefault();
 			this.props.onClick(area, index, event);
+			this.setState({
+				currentlyHoveredArea: undefined,
+			});
 		}
 	}
 
@@ -111,6 +85,9 @@ export default class ImageMapper extends Component {
 		if (this.props.onImageClick) {
 			event.preventDefault();
 			this.props.onImageClick(event);
+			this.setState({
+				currentlyHoveredArea: undefined,
+			});
 		}
 	}
 
@@ -189,7 +166,7 @@ export default class ImageMapper extends Component {
 	}
 
 	getExtendedAreas() {
-		return this.state.map.areas.map((area) => {
+		return this.props.map.areas.map((area) => {
 			const scaledCoords = this.scaleCoords(area.coords);
 			const center = this.computeCenter(area);
 			return { ...area, scaledCoords, center };
@@ -241,7 +218,7 @@ export default class ImageMapper extends Component {
 	}
 
 	renderPrefillSvgElements() {
-		return this.state.map.areas.map((area, index) => {
+		return this.props.map.areas.map((area, index) => {
 			if (!area.preFillColor) return null;
 			return this.getMatchingSvgElementForShape(area.shape, area.coords, {
 				key: area._id || index,
@@ -284,7 +261,7 @@ export default class ImageMapper extends Component {
 				<img
 					style={this.styles.img}
 					src={this.props.src}
-					useMap={`#${this.state.map.name}`}
+					useMap={`#${this.props.map.name}`}
 					alt=""
 					ref={this.imgRef}
 					onLoad={this.initCanvases}
@@ -297,9 +274,9 @@ export default class ImageMapper extends Component {
 					{this.renderPrefillSvgElements()}
 				</svg>
 				<svg id="hover-layer" ref={node => (this.hoverSvg = node)} style={this.styles.hoverCanvas}>
-					{this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()}
+					{this.state && this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()}
 				</svg>
-				<map name={this.state.map.name} style={this.styles.map}>
+				<map name={this.props.map.name} style={this.styles.map}>
 					{this.renderAreas()}
 				</map>
 				{this.renderChildren()}

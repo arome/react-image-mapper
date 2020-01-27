@@ -1172,7 +1172,7 @@ module.exports = function exportedEqual(a, b) {
 
 },{}],9:[function(require,module,exports){
 (function (process){
-/** @license React v16.9.0
+/** @license React v16.12.0
  * react-is.development.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -1194,16 +1194,15 @@ Object.defineProperty(exports, '__esModule', { value: true });
 // The Symbol used to tag the ReactElement-like types. If there is no native Symbol
 // nor polyfill, then a plain number is used for performance.
 var hasSymbol = typeof Symbol === 'function' && Symbol.for;
-
 var REACT_ELEMENT_TYPE = hasSymbol ? Symbol.for('react.element') : 0xeac7;
 var REACT_PORTAL_TYPE = hasSymbol ? Symbol.for('react.portal') : 0xeaca;
 var REACT_FRAGMENT_TYPE = hasSymbol ? Symbol.for('react.fragment') : 0xeacb;
 var REACT_STRICT_MODE_TYPE = hasSymbol ? Symbol.for('react.strict_mode') : 0xeacc;
 var REACT_PROFILER_TYPE = hasSymbol ? Symbol.for('react.profiler') : 0xead2;
 var REACT_PROVIDER_TYPE = hasSymbol ? Symbol.for('react.provider') : 0xeacd;
-var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace;
-// TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
+var REACT_CONTEXT_TYPE = hasSymbol ? Symbol.for('react.context') : 0xeace; // TODO: We don't use AsyncMode or ConcurrentMode anymore. They were temporary
 // (unstable) APIs that have been removed. Can we remove the symbols?
+
 var REACT_ASYNC_MODE_TYPE = hasSymbol ? Symbol.for('react.async_mode') : 0xeacf;
 var REACT_CONCURRENT_MODE_TYPE = hasSymbol ? Symbol.for('react.concurrent_mode') : 0xeacf;
 var REACT_FORWARD_REF_TYPE = hasSymbol ? Symbol.for('react.forward_ref') : 0xead0;
@@ -1213,11 +1212,11 @@ var REACT_MEMO_TYPE = hasSymbol ? Symbol.for('react.memo') : 0xead3;
 var REACT_LAZY_TYPE = hasSymbol ? Symbol.for('react.lazy') : 0xead4;
 var REACT_FUNDAMENTAL_TYPE = hasSymbol ? Symbol.for('react.fundamental') : 0xead5;
 var REACT_RESPONDER_TYPE = hasSymbol ? Symbol.for('react.responder') : 0xead6;
+var REACT_SCOPE_TYPE = hasSymbol ? Symbol.for('react.scope') : 0xead7;
 
 function isValidElementType(type) {
-  return typeof type === 'string' || typeof type === 'function' ||
-  // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
-  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE);
+  return typeof type === 'string' || typeof type === 'function' || // Note: its typeof might be other than 'symbol' or 'number' if it's a polyfill.
+  type === REACT_FRAGMENT_TYPE || type === REACT_CONCURRENT_MODE_TYPE || type === REACT_PROFILER_TYPE || type === REACT_STRICT_MODE_TYPE || type === REACT_SUSPENSE_TYPE || type === REACT_SUSPENSE_LIST_TYPE || typeof type === 'object' && type !== null && (type.$$typeof === REACT_LAZY_TYPE || type.$$typeof === REACT_MEMO_TYPE || type.$$typeof === REACT_PROVIDER_TYPE || type.$$typeof === REACT_CONTEXT_TYPE || type.$$typeof === REACT_FORWARD_REF_TYPE || type.$$typeof === REACT_FUNDAMENTAL_TYPE || type.$$typeof === REACT_RESPONDER_TYPE || type.$$typeof === REACT_SCOPE_TYPE);
 }
 
 /**
@@ -1233,12 +1232,11 @@ function isValidElementType(type) {
  * paths. Removing the logging code for production environments will keep the
  * same logic and follow the same code paths.
  */
-
-var lowPriorityWarning = function () {};
+var lowPriorityWarningWithoutStack = function () {};
 
 {
   var printWarning = function (format) {
-    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
       args[_key - 1] = arguments[_key];
     }
 
@@ -1246,9 +1244,11 @@ var lowPriorityWarning = function () {};
     var message = 'Warning: ' + format.replace(/%s/g, function () {
       return args[argIndex++];
     });
+
     if (typeof console !== 'undefined') {
       console.warn(message);
     }
+
     try {
       // --- Welcome to debugging React ---
       // This error was thrown as a convenience so that you can use this stack
@@ -1257,25 +1257,27 @@ var lowPriorityWarning = function () {};
     } catch (x) {}
   };
 
-  lowPriorityWarning = function (condition, format) {
+  lowPriorityWarningWithoutStack = function (condition, format) {
     if (format === undefined) {
-      throw new Error('`lowPriorityWarning(condition, format, ...args)` requires a warning ' + 'message argument');
+      throw new Error('`lowPriorityWarningWithoutStack(condition, format, ...args)` requires a warning ' + 'message argument');
     }
+
     if (!condition) {
-      for (var _len2 = arguments.length, args = Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
+      for (var _len2 = arguments.length, args = new Array(_len2 > 2 ? _len2 - 2 : 0), _key2 = 2; _key2 < _len2; _key2++) {
         args[_key2 - 2] = arguments[_key2];
       }
 
-      printWarning.apply(undefined, [format].concat(args));
+      printWarning.apply(void 0, [format].concat(args));
     }
   };
 }
 
-var lowPriorityWarning$1 = lowPriorityWarning;
+var lowPriorityWarningWithoutStack$1 = lowPriorityWarningWithoutStack;
 
 function typeOf(object) {
   if (typeof object === 'object' && object !== null) {
     var $$typeof = object.$$typeof;
+
     switch ($$typeof) {
       case REACT_ELEMENT_TYPE:
         var type = object.type;
@@ -1288,29 +1290,32 @@ function typeOf(object) {
           case REACT_STRICT_MODE_TYPE:
           case REACT_SUSPENSE_TYPE:
             return type;
+
           default:
             var $$typeofType = type && type.$$typeof;
 
             switch ($$typeofType) {
               case REACT_CONTEXT_TYPE:
               case REACT_FORWARD_REF_TYPE:
+              case REACT_LAZY_TYPE:
+              case REACT_MEMO_TYPE:
               case REACT_PROVIDER_TYPE:
                 return $$typeofType;
+
               default:
                 return $$typeof;
             }
+
         }
-      case REACT_LAZY_TYPE:
-      case REACT_MEMO_TYPE:
+
       case REACT_PORTAL_TYPE:
         return $$typeof;
     }
   }
 
   return undefined;
-}
+} // AsyncMode is deprecated along with isAsyncMode
 
-// AsyncMode is deprecated along with isAsyncMode
 var AsyncMode = REACT_ASYNC_MODE_TYPE;
 var ConcurrentMode = REACT_CONCURRENT_MODE_TYPE;
 var ContextConsumer = REACT_CONTEXT_TYPE;
@@ -1324,17 +1329,16 @@ var Portal = REACT_PORTAL_TYPE;
 var Profiler = REACT_PROFILER_TYPE;
 var StrictMode = REACT_STRICT_MODE_TYPE;
 var Suspense = REACT_SUSPENSE_TYPE;
+var hasWarnedAboutDeprecatedIsAsyncMode = false; // AsyncMode should be deprecated
 
-var hasWarnedAboutDeprecatedIsAsyncMode = false;
-
-// AsyncMode should be deprecated
 function isAsyncMode(object) {
   {
     if (!hasWarnedAboutDeprecatedIsAsyncMode) {
       hasWarnedAboutDeprecatedIsAsyncMode = true;
-      lowPriorityWarning$1(false, 'The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
+      lowPriorityWarningWithoutStack$1(false, 'The ReactIs.isAsyncMode() alias has been deprecated, ' + 'and will be removed in React 17+. Update your code to use ' + 'ReactIs.isConcurrentMode() instead. It has the exact same API.');
     }
   }
+
   return isConcurrentMode(object) || typeOf(object) === REACT_ASYNC_MODE_TYPE;
 }
 function isConcurrentMode(object) {
@@ -1407,7 +1411,7 @@ exports.isSuspense = isSuspense;
 
 }).call(this,require('_process'))
 },{"_process":2}],10:[function(require,module,exports){
-/** @license React v16.9.0
+/** @license React v16.12.0
  * react-is.production.min.js
  *
  * Copyright (c) Facebook, Inc. and its affiliates.
@@ -1418,10 +1422,10 @@ exports.isSuspense = isSuspense;
 
 'use strict';Object.defineProperty(exports,"__esModule",{value:!0});
 var b="function"===typeof Symbol&&Symbol.for,c=b?Symbol.for("react.element"):60103,d=b?Symbol.for("react.portal"):60106,e=b?Symbol.for("react.fragment"):60107,f=b?Symbol.for("react.strict_mode"):60108,g=b?Symbol.for("react.profiler"):60114,h=b?Symbol.for("react.provider"):60109,k=b?Symbol.for("react.context"):60110,l=b?Symbol.for("react.async_mode"):60111,m=b?Symbol.for("react.concurrent_mode"):60111,n=b?Symbol.for("react.forward_ref"):60112,p=b?Symbol.for("react.suspense"):60113,q=b?Symbol.for("react.suspense_list"):
-60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.fundamental"):60117,w=b?Symbol.for("react.responder"):60118;function x(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case h:return a;default:return u}}case t:case r:case d:return u}}}function y(a){return x(a)===m}exports.typeOf=x;exports.AsyncMode=l;
-exports.ConcurrentMode=m;exports.ContextConsumer=k;exports.ContextProvider=h;exports.Element=c;exports.ForwardRef=n;exports.Fragment=e;exports.Lazy=t;exports.Memo=r;exports.Portal=d;exports.Profiler=g;exports.StrictMode=f;exports.Suspense=p;
-exports.isValidElementType=function(a){return"string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===v||a.$$typeof===w)};exports.isAsyncMode=function(a){return y(a)||x(a)===l};exports.isConcurrentMode=y;exports.isContextConsumer=function(a){return x(a)===k};exports.isContextProvider=function(a){return x(a)===h};
-exports.isElement=function(a){return"object"===typeof a&&null!==a&&a.$$typeof===c};exports.isForwardRef=function(a){return x(a)===n};exports.isFragment=function(a){return x(a)===e};exports.isLazy=function(a){return x(a)===t};exports.isMemo=function(a){return x(a)===r};exports.isPortal=function(a){return x(a)===d};exports.isProfiler=function(a){return x(a)===g};exports.isStrictMode=function(a){return x(a)===f};exports.isSuspense=function(a){return x(a)===p};
+60120,r=b?Symbol.for("react.memo"):60115,t=b?Symbol.for("react.lazy"):60116,v=b?Symbol.for("react.fundamental"):60117,w=b?Symbol.for("react.responder"):60118,x=b?Symbol.for("react.scope"):60119;function y(a){if("object"===typeof a&&null!==a){var u=a.$$typeof;switch(u){case c:switch(a=a.type,a){case l:case m:case e:case g:case f:case p:return a;default:switch(a=a&&a.$$typeof,a){case k:case n:case t:case r:case h:return a;default:return u}}case d:return u}}}function z(a){return y(a)===m}
+exports.typeOf=y;exports.AsyncMode=l;exports.ConcurrentMode=m;exports.ContextConsumer=k;exports.ContextProvider=h;exports.Element=c;exports.ForwardRef=n;exports.Fragment=e;exports.Lazy=t;exports.Memo=r;exports.Portal=d;exports.Profiler=g;exports.StrictMode=f;exports.Suspense=p;
+exports.isValidElementType=function(a){return"string"===typeof a||"function"===typeof a||a===e||a===m||a===g||a===f||a===p||a===q||"object"===typeof a&&null!==a&&(a.$$typeof===t||a.$$typeof===r||a.$$typeof===h||a.$$typeof===k||a.$$typeof===n||a.$$typeof===v||a.$$typeof===w||a.$$typeof===x)};exports.isAsyncMode=function(a){return z(a)||y(a)===l};exports.isConcurrentMode=z;exports.isContextConsumer=function(a){return y(a)===k};exports.isContextProvider=function(a){return y(a)===h};
+exports.isElement=function(a){return"object"===typeof a&&null!==a&&a.$$typeof===c};exports.isForwardRef=function(a){return y(a)===n};exports.isFragment=function(a){return y(a)===e};exports.isLazy=function(a){return y(a)===t};exports.isMemo=function(a){return y(a)===r};exports.isPortal=function(a){return y(a)===d};exports.isProfiler=function(a){return y(a)===g};exports.isStrictMode=function(a){return y(a)===f};exports.isSuspense=function(a){return y(a)===p};
 
 },{}],11:[function(require,module,exports){
 (function (process){
@@ -1442,11 +1446,11 @@ Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; desc = parent = undefined; continue _function; } } else if ('value' in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1489,49 +1493,28 @@ var ImageMapper = (function (_Component) {
 			img: _extends({}, absPos, { zIndex: 1, userSelect: 'none' }),
 			map: props.onClick && { cursor: 'pointer' } || undefined
 		};
-		// Props watched for changes to trigger update
-		this.watchedProps = ['active', 'fillColor', 'height', 'imgWidth', 'lineWidth', 'src', 'strokeColor', 'width', 'renderChildren'];
 		this.imgRef = _react2['default'].createRef();
 		if (this.props.imgRef) {
 			this.imgRef = this.props.imgRef;
 		}
+		if (this.props.onExtendedAreasCreated) {
+			this.props.onExtendedAreasCreated(this.getExtendedAreas());
+		}
 	}
 
 	_createClass(ImageMapper, [{
-		key: 'shouldComponentUpdate',
-		value: function shouldComponentUpdate(nextProps, nextState) {
-			var _this2 = this;
-
-			if (!(0, _reactFastCompare2['default'])(this.state.currentlyHoveredArea, nextState.currentlyHoveredArea)) return true;
-			var propChanged = this.watchedProps.some(function (prop) {
-				return _this2.props[prop] !== nextProps[prop];
-			});
-			var result = !(0, _reactFastCompare2['default'])(this.props.map, this.state.map) || propChanged;
-			return result;
-		}
-	}, {
-		key: 'UNSAFE_componentWillMount',
-		value: function UNSAFE_componentWillMount() {
-			this.updateCacheMap();
-		}
-	}, {
-		key: 'updateCacheMap',
-		value: function updateCacheMap() {
-			this.setState({ map: _extends({}, this.props.map) }, this.initCanvases);
-		}
-	}, {
 		key: 'componentDidUpdate',
-		value: function componentDidUpdate() {
-			if (!(0, _reactFastCompare2['default'])(this.props.map, this.state.map)) {
+		value: function componentDidUpdate(prevProps) {
+			if (!(0, _reactFastCompare2['default'])(prevProps, this.props)) {
+				// eslint-disable-next-line react/no-did-update-set-state
 				this.setState({
 					currentlyHoveredArea: undefined
 				});
+				if (!(0, _reactFastCompare2['default'])(prevProps.map, this.props.map)) {
+					this.props.onExtendedAreasCreated(this.getExtendedAreas());
+				}
 			}
-			this.updateCacheMap();
 			this.initCanvases();
-			if (this.props.onExtendedAreasCreated) {
-				this.props.onExtendedAreasCreated(this.getExtendedAreas());
-			}
 		}
 	}, {
 		key: 'initCanvases',
@@ -1572,6 +1555,9 @@ var ImageMapper = (function (_Component) {
 			if (this.props.onClick) {
 				event.preventDefault();
 				this.props.onClick(area, index, event);
+				this.setState({
+					currentlyHoveredArea: undefined
+				});
 			}
 		}
 	}, {
@@ -1580,6 +1566,9 @@ var ImageMapper = (function (_Component) {
 			if (this.props.onImageClick) {
 				event.preventDefault();
 				this.props.onImageClick(event);
+				this.setState({
+					currentlyHoveredArea: undefined
+				});
 			}
 		}
 	}, {
@@ -1684,11 +1673,11 @@ var ImageMapper = (function (_Component) {
 	}, {
 		key: 'getExtendedAreas',
 		value: function getExtendedAreas() {
-			var _this3 = this;
+			var _this2 = this;
 
-			return this.state.map.areas.map(function (area) {
-				var scaledCoords = _this3.scaleCoords(area.coords);
-				var center = _this3.computeCenter(area);
+			return this.props.map.areas.map(function (area) {
+				var scaledCoords = _this2.scaleCoords(area.coords);
+				var center = _this2.computeCenter(area);
 				return _extends({}, area, { scaledCoords: scaledCoords, center: center });
 			});
 		}
@@ -1732,34 +1721,34 @@ var ImageMapper = (function (_Component) {
 	}, {
 		key: 'renderPrefillSvgElements',
 		value: function renderPrefillSvgElements() {
-			var _this4 = this;
+			var _this3 = this;
 
-			return this.state.map.areas.map(function (area, index) {
+			return this.props.map.areas.map(function (area, index) {
 				if (!area.preFillColor) return null;
-				return _this4.getMatchingSvgElementForShape(area.shape, area.coords, {
+				return _this3.getMatchingSvgElementForShape(area.shape, area.coords, {
 					key: area._id || index,
 					fill: area.preFillColor || 'transparent',
-					stroke: area.strokeColor || _this4.props.strokeColor,
-					strokeWidth: area.lineWidth || _this4.props.lineWidth
+					stroke: area.strokeColor || _this3.props.strokeColor,
+					strokeWidth: area.lineWidth || _this3.props.lineWidth
 				});
 			});
 		}
 	}, {
 		key: 'renderAreas',
 		value: function renderAreas() {
-			var _this5 = this;
+			var _this4 = this;
 
 			return this.getExtendedAreas().map(function (extendedArea, index) {
 				return _react2['default'].createElement('area', {
 					key: extendedArea._id || index,
 					shape: extendedArea.shape,
 					coords: extendedArea.scaledCoords.join(','),
-					onMouseEnter: _this5.hoverOn.bind(_this5, extendedArea, index),
-					onMouseLeave: _this5.hoverOff.bind(_this5, extendedArea, index),
-					onMouseMove: _this5.mouseMove.bind(_this5, extendedArea, index),
-					onMouseDown: _this5.mouseDown.bind(_this5, extendedArea, index),
-					onMouseUp: _this5.mouseUp.bind(_this5, extendedArea, index),
-					onClick: _this5.click.bind(_this5, extendedArea, index),
+					onMouseEnter: _this4.hoverOn.bind(_this4, extendedArea, index),
+					onMouseLeave: _this4.hoverOff.bind(_this4, extendedArea, index),
+					onMouseMove: _this4.mouseMove.bind(_this4, extendedArea, index),
+					onMouseDown: _this4.mouseDown.bind(_this4, extendedArea, index),
+					onMouseUp: _this4.mouseUp.bind(_this4, extendedArea, index),
+					onClick: _this4.click.bind(_this4, extendedArea, index),
 					href: extendedArea.href
 				});
 			});
@@ -1775,17 +1764,17 @@ var ImageMapper = (function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this6 = this;
+			var _this5 = this;
 
 			return _react2['default'].createElement(
 				'div',
 				{ style: this.styles.container, ref: function (node) {
-						return _this6.container = node;
+						return _this5.container = node;
 					} },
 				_react2['default'].createElement('img', {
 					style: this.styles.img,
 					src: this.props.src,
-					useMap: '#' + this.state.map.name,
+					useMap: '#' + this.props.map.name,
 					alt: '',
 					ref: this.imgRef,
 					onLoad: this.initCanvases,
@@ -1797,20 +1786,20 @@ var ImageMapper = (function (_Component) {
 				_react2['default'].createElement(
 					'svg',
 					{ id: 'prefill-layer', ref: function (node) {
-							return _this6.prefillSvg = node;
+							return _this5.prefillSvg = node;
 						}, style: this.styles.prefillCanvas },
 					this.renderPrefillSvgElements()
 				),
 				_react2['default'].createElement(
 					'svg',
 					{ id: 'hover-layer', ref: function (node) {
-							return _this6.hoverSvg = node;
+							return _this5.hoverSvg = node;
 						}, style: this.styles.hoverCanvas },
-					this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()
+					this.state && this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()
 				),
 				_react2['default'].createElement(
 					'map',
-					{ name: this.state.map.name, style: this.styles.map },
+					{ name: this.props.map.name, style: this.styles.map },
 					this.renderAreas()
 				),
 				this.renderChildren()
