@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'react-fast-compare';
 
@@ -8,15 +8,16 @@ export default class ImageMapper extends Component {
 		[
 			'initCanvases'
 		].forEach(f => (this[f] = this[f].bind(this)));
-		let absPos = { position: 'absolute', top: 0, left: 0 };
-		let canvas = { ...absPos, pointerEvents: 'none' };
+		let absPos = {position: 'absolute', top: 0, left: 0};
+		let canvas = {...absPos, pointerEvents: 'none'};
 		this.styles = {
-			container: { position: 'relative' },
-			hoverCanvas: { ...canvas, zIndex: 3 },
-			prefillCanvas: { ...canvas, zIndex: 2 },
-			img: { ...absPos, zIndex: 1, userSelect: 'none' },
-			map: (props.onClick && { cursor: 'pointer' }) || undefined
+			container: {position: 'relative'},
+			hoverCanvas: {...canvas, zIndex: 3},
+			prefillCanvas: {...canvas, zIndex: 2},
+			img: {...absPos, zIndex: 1, userSelect: 'none'},
+			map: (props.onClick && {cursor: 'pointer'}) || undefined
 		};
+		this.prevImgRef = null;
 		this.imgRef = React.createRef();
 		if (this.props.imgRef) {
 			this.imgRef = this.props.imgRef;
@@ -24,6 +25,10 @@ export default class ImageMapper extends Component {
 		if (this.props.onExtendedAreasCreated) {
 			this.props.onExtendedAreasCreated(this.getExtendedAreas());
 		}
+	}
+
+	componentDidMount() {
+		this.prevImgRef = this.imgRef.current;
 	}
 
 	componentDidUpdate(prevProps) {
@@ -35,22 +40,28 @@ export default class ImageMapper extends Component {
 			if (!isEqual(prevProps.map, this.props.map)) {
 				this.props.onExtendedAreasCreated(this.getExtendedAreas());
 			}
+			if (this.imgRef.current !== this.prevImgRef) {
+				this.imgRef = this.props.imgRef || React.createRef();
+			}
+			this.prevImgRef = this.imgRef.current;
 		}
 		this.initCanvases();
 	}
 
 	initCanvases() {
-		if (this.props.width) this.imgRef.current.width = this.props.width;
+		if (this.imgRef.current) {
+			if (this.props.width) this.imgRef.current.width = this.props.width;
 
-		if (this.props.height) this.imgRef.current.height = this.props.height;
+			if (this.props.height) this.imgRef.current.height = this.props.height;
 
-		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
-		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
+			this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
+			this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.imgRef.current.clientWidth} ${this.props.height || this.imgRef.current.clientHeight}`);
 
-		this.container.style.width =
-			(this.props.width || this.imgRef.current.clientWidth) + 'px';
-		this.container.style.height =
-			(this.props.height || this.imgRef.current.clientHeight) + 'px';
+			this.container.style.width =
+				(this.props.width || this.imgRef.current.clientWidth) + 'px';
+			this.container.style.height =
+				(this.props.height || this.imgRef.current.clientHeight) + 'px';
+		}
 
 		if (this.props.onLoad) this.props.onLoad();
 	}
@@ -128,7 +139,7 @@ export default class ImageMapper extends Component {
 	}
 
 	scaleCoords(coords) {
-		const { imgWidth, width } = this.props;
+		const {imgWidth, width} = this.props;
 		// calculate scale based on current 'width' and the original 'imgWidth'
 		const scale = width && imgWidth && imgWidth > 0 ? width / imgWidth : 1;
 		return coords.map(coord => coord * scale);
@@ -154,11 +165,11 @@ export default class ImageMapper extends Component {
 			default: {
 				// Calculate centroid
 				const n = scaledCoords.length / 2;
-				const { y, x } = scaledCoords.reduce(
-					({ y, x }, val, idx) => {
-						return !(idx % 2) ? { y, x: x + val / n } : { y: y + val / n, x };
+				const {y, x} = scaledCoords.reduce(
+					({y, x}, val, idx) => {
+						return !(idx % 2) ? {y, x: x + val / n} : {y: y + val / n, x};
 					},
-					{ y: 0, x: 0 }
+					{y: 0, x: 0}
 				);
 				return [x, y];
 			}
@@ -169,7 +180,7 @@ export default class ImageMapper extends Component {
 		return this.props.map.areas.map((area) => {
 			const scaledCoords = this.scaleCoords(area.coords);
 			const center = this.computeCenter(area);
-			return { ...area, scaledCoords, center };
+			return {...area, scaledCoords, center};
 		});
 	}
 
@@ -256,20 +267,24 @@ export default class ImageMapper extends Component {
 	};
 
 	render() {
+		const ImageElement = React.forwardRef((props, ref) => (
+			<img
+				style={this.styles.img}
+				src={this.props.src}
+				useMap={`#${this.props.map.name}`}
+				alt=""
+				ref={ref}
+				onLoad={this.initCanvases}
+				onClick={this.imageClick.bind(this)}
+				onMouseMove={this.imageMouseMove.bind(this)}
+				onMouseDown={this.imageMouseDown.bind(this)}
+				onMouseUp={this.imageMouseUp.bind(this)}
+			/>
+		));
+
 		return (
 			<div style={this.styles.container} ref={node => (this.container = node)}>
-				<img
-					style={this.styles.img}
-					src={this.props.src}
-					useMap={`#${this.props.map.name}`}
-					alt=""
-					ref={this.imgRef}
-					onLoad={this.initCanvases}
-					onClick={this.imageClick.bind(this)}
-					onMouseMove={this.imageMouseMove.bind(this)}
-					onMouseDown={this.imageMouseDown.bind(this)}
-					onMouseUp={this.imageMouseUp.bind(this)}
-				/>
+				<ImageElement ref={this.imgRef}/>
 				<svg id="prefill-layer" ref={node => (this.prefillSvg = node)} style={this.styles.prefillCanvas}>
 					{this.renderPrefillSvgElements()}
 				</svg>
@@ -323,7 +338,7 @@ ImageMapper.propTypes = {
 
 	imgRef: PropTypes.oneOfType([
 		PropTypes.func,
-		PropTypes.shape({ current: PropTypes.instanceOf(Element) })
+		PropTypes.shape({current: PropTypes.instanceOf(Element)})
 	]),
 
 	map: PropTypes.shape({

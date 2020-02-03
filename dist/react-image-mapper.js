@@ -1493,6 +1493,7 @@ var ImageMapper = (function (_Component) {
 			img: _extends({}, absPos, { zIndex: 1, userSelect: 'none' }),
 			map: props.onClick && { cursor: 'pointer' } || undefined
 		};
+		this.prevImgRef = null;
 		this.imgRef = _react2['default'].createRef();
 		if (this.props.imgRef) {
 			this.imgRef = this.props.imgRef;
@@ -1503,6 +1504,11 @@ var ImageMapper = (function (_Component) {
 	}
 
 	_createClass(ImageMapper, [{
+		key: 'componentDidMount',
+		value: function componentDidMount() {
+			this.prevImgRef = this.imgRef.current;
+		}
+	}, {
 		key: 'componentDidUpdate',
 		value: function componentDidUpdate(prevProps) {
 			if (!(0, _reactFastCompare2['default'])(prevProps, this.props)) {
@@ -1513,21 +1519,27 @@ var ImageMapper = (function (_Component) {
 				if (!(0, _reactFastCompare2['default'])(prevProps.map, this.props.map)) {
 					this.props.onExtendedAreasCreated(this.getExtendedAreas());
 				}
+				if (this.imgRef.current !== this.prevImgRef) {
+					this.imgRef = this.props.imgRef || _react2['default'].createRef();
+				}
+				this.prevImgRef = this.imgRef.current;
 			}
 			this.initCanvases();
 		}
 	}, {
 		key: 'initCanvases',
 		value: function initCanvases() {
-			if (this.props.width) this.imgRef.current.width = this.props.width;
+			if (this.imgRef.current) {
+				if (this.props.width) this.imgRef.current.width = this.props.width;
 
-			if (this.props.height) this.imgRef.current.height = this.props.height;
+				if (this.props.height) this.imgRef.current.height = this.props.height;
 
-			this.prefillSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.imgRef.current.clientWidth) + ' ' + (this.props.height || this.imgRef.current.clientHeight));
-			this.hoverSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.imgRef.current.clientWidth) + ' ' + (this.props.height || this.imgRef.current.clientHeight));
+				this.prefillSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.imgRef.current.clientWidth) + ' ' + (this.props.height || this.imgRef.current.clientHeight));
+				this.hoverSvg.setAttribute('viewBox', '0 0 ' + (this.props.width || this.imgRef.current.clientWidth) + ' ' + (this.props.height || this.imgRef.current.clientHeight));
 
-			this.container.style.width = (this.props.width || this.imgRef.current.clientWidth) + 'px';
-			this.container.style.height = (this.props.height || this.imgRef.current.clientHeight) + 'px';
+				this.container.style.width = (this.props.width || this.imgRef.current.clientWidth) + 'px';
+				this.container.style.height = (this.props.height || this.imgRef.current.clientHeight) + 'px';
+			}
 
 			if (this.props.onLoad) this.props.onLoad();
 		}
@@ -1766,23 +1778,27 @@ var ImageMapper = (function (_Component) {
 		value: function render() {
 			var _this5 = this;
 
+			var ImageElement = _react2['default'].forwardRef(function (props, ref) {
+				return _react2['default'].createElement('img', {
+					style: _this5.styles.img,
+					src: _this5.props.src,
+					useMap: '#' + _this5.props.map.name,
+					alt: '',
+					ref: ref,
+					onLoad: _this5.initCanvases,
+					onClick: _this5.imageClick.bind(_this5),
+					onMouseMove: _this5.imageMouseMove.bind(_this5),
+					onMouseDown: _this5.imageMouseDown.bind(_this5),
+					onMouseUp: _this5.imageMouseUp.bind(_this5)
+				});
+			});
+
 			return _react2['default'].createElement(
 				'div',
 				{ style: this.styles.container, ref: function (node) {
 						return _this5.container = node;
 					} },
-				_react2['default'].createElement('img', {
-					style: this.styles.img,
-					src: this.props.src,
-					useMap: '#' + this.props.map.name,
-					alt: '',
-					ref: this.imgRef,
-					onLoad: this.initCanvases,
-					onClick: this.imageClick.bind(this),
-					onMouseMove: this.imageMouseMove.bind(this),
-					onMouseDown: this.imageMouseDown.bind(this),
-					onMouseUp: this.imageMouseUp.bind(this)
-				}),
+				_react2['default'].createElement(ImageElement, { ref: this.imgRef }),
 				_react2['default'].createElement(
 					'svg',
 					{ id: 'prefill-layer', ref: function (node) {
