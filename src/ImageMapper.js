@@ -362,10 +362,10 @@ ImageMapper.propTypes = {
 			color: PropTypes.string,
 			radius: PropTypes.number
 		}),
-		line: {
+		line: PropTypes.shape({
 			color: PropTypes.string,
 			strokeWidth: PropTypes.number
-		},
+		}),
 		steps: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
 	}),
 	renderChildren: PropTypes.func,
