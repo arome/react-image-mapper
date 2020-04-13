@@ -5,9 +5,7 @@ import isEqual from 'react-fast-compare';
 export default class ImageMapper extends Component {
 	constructor(props) {
 		super(props);
-		[
-			'initCanvases'
-		].forEach(f => (this[f] = this[f].bind(this)));
+		['initCanvases'].forEach(f => (this[f] = this[f].bind(this)));
 		let absPos = { position: 'absolute', top: 0, left: 0 };
 		let canvas = { ...absPos, pointerEvents: 'none' };
 		this.styles = {
@@ -32,10 +30,8 @@ export default class ImageMapper extends Component {
 	}
 
 	shouldComponentUpdate(nextProps, nextState) {
-		if (!(isEqual(this.state.currentlyHoveredArea, nextState.currentlyHoveredArea))) return true;
-		const propChanged = this.watchedProps.some(
-			prop => this.props[prop] !== nextProps[prop]
-		);
+		if (!isEqual(this.state.currentlyHoveredArea, nextState.currentlyHoveredArea)) return true;
+		const propChanged = this.watchedProps.some(prop => this.props[prop] !== nextProps[prop]);
 		const result = !isEqual(this.props.map, this.state.map) || propChanged;
 		return result;
 	}
@@ -45,16 +41,13 @@ export default class ImageMapper extends Component {
 	}
 
 	updateCacheMap() {
-		this.setState(
-			{ map: Object.assign({}, this.props.map) },
-			this.initCanvases
-		);
+		this.setState({ map: Object.assign({}, this.props.map) }, this.initCanvases);
 	}
 
 	componentDidUpdate() {
 		if (!isEqual(this.props.map, this.state.map)) {
 			this.setState({
-				currentlyHoveredArea: undefined,
+				currentlyHoveredArea: undefined
 			});
 		}
 		this.updateCacheMap();
@@ -68,31 +61,35 @@ export default class ImageMapper extends Component {
 		if (this.props.width) this.img.width = this.props.width;
 
 		if (this.props.height) this.img.height = this.props.height;
-		
-		this.prefillSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`);
-		this.hoverSvg.setAttribute('viewBox', `0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`);
-		
-		this.container.style.width =
-			(this.props.width || this.img.clientWidth) + 'px';
-		this.container.style.height =
-			(this.props.height || this.img.clientHeight) + 'px';
-		
+
+		this.prefillSvg.setAttribute(
+			'viewBox',
+			`0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`
+		);
+		this.hoverSvg.setAttribute(
+			'viewBox',
+			`0 0 ${this.props.width || this.img.clientWidth} ${this.props.height || this.img.clientHeight}`
+		);
+
+		this.container.style.width = (this.props.width || this.img.clientWidth) + 'px';
+		this.container.style.height = (this.props.height || this.img.clientHeight) + 'px';
+
 		if (this.props.onLoad) this.props.onLoad();
 	}
 
 	hoverOn(area, index, event) {
 		if (this.props.onMouseEnter) this.props.onMouseEnter(area, index, event);
-		
+
 		this.setState({
-			currentlyHoveredArea: area,
+			currentlyHoveredArea: area
 		});
 	}
 
 	hoverOff(area, index, event) {
 		if (this.props.onMouseLeave) this.props.onMouseLeave(area, index, event);
-		
+
 		this.setState({
-			currentlyHoveredArea: undefined,
+			currentlyHoveredArea: undefined
 		});
 	}
 
@@ -133,13 +130,13 @@ export default class ImageMapper extends Component {
 			this.props.onImageMouseMove(area, index, event);
 		}
 	}
-	
+
 	imageMouseDown(area, index, event) {
 		if (this.props.onImageMouseDown) {
 			this.props.onImageMouseDown(area, index, event);
 		}
 	}
-	
+
 	imageMouseUp(area, index, event) {
 		if (this.props.onImageMouseUp) {
 			this.props.onImageMouseUp(area, index, event);
@@ -152,12 +149,9 @@ export default class ImageMapper extends Component {
 		const scale = width && imgWidth && imgWidth > 0 ? width / imgWidth : 1;
 		return coords.map(coord => coord * scale);
 	}
-	
+
 	mapCoordsToSvgFormat(coords) {
-		return coords.reduce(
-			(a, v, i, s) => (i % 2 ? a : [...a, s.slice(i, i + 2)]),
-			[]
-		).join(' ');
+		return coords.reduce((a, v, i, s) => (i % 2 ? a : [...a, s.slice(i, i + 2)]), []).join(' ');
 	}
 
 	computeCenter(area) {
@@ -183,15 +177,15 @@ export default class ImageMapper extends Component {
 			}
 		}
 	}
-	
+
 	getExtendedAreas() {
-		return this.state.map.areas.map((area) => {
+		return this.state.map.areas.map(area => {
 			const scaledCoords = this.scaleCoords(area.coords);
 			const center = this.computeCenter(area);
 			return { ...area, scaledCoords, center };
 		});
 	}
-	
+
 	getMatchingSvgElementForShape(shape, coords, props) {
 		const scaledCoords = this.scaleCoords(coords);
 		switch (shape) {
@@ -206,36 +200,24 @@ export default class ImageMapper extends Component {
 					/>
 				);
 			case 'circle':
-				return (
-					<circle
-						cx={scaledCoords[0]}
-						cy={scaledCoords[1]}
-						r={scaledCoords[2]}
-						{...props}
-					/>
-				);
+				return <circle cx={scaledCoords[0]} cy={scaledCoords[1]} r={scaledCoords[2]} {...props} />;
 			case 'poly':
 			default:
-				return (
-					<polygon
-						points={this.mapCoordsToSvgFormat(scaledCoords)}
-						{...props}
-					/>
-				);
+				return <polygon points={this.mapCoordsToSvgFormat(scaledCoords)} {...props} />;
 		}
 	}
-	
+
 	renderCurrentlyHoveredSvgElement() {
 		const area = this.state.currentlyHoveredArea;
-		if (!(area)) return null;
+		if (!area) return null;
 		return this.getMatchingSvgElementForShape(area.shape, area.coords, {
 			key: area._id || 'hover-area',
 			fill: area.fillColor || 'transparent',
 			stroke: area.strokeColor || this.props.strokeColor,
-			strokeWidth: area.lineWidth || this.props.lineWidth,
+			strokeWidth: area.lineWidth || this.props.lineWidth
 		});
 	}
-	
+
 	renderPrefillSvgElements() {
 		return this.state.map.areas.map((area, index) => {
 			if (!area.preFillColor) return null;
@@ -243,7 +225,7 @@ export default class ImageMapper extends Component {
 				key: area._id || index,
 				fill: area.preFillColor || 'transparent',
 				stroke: area.strokeColor || this.props.strokeColor,
-				strokeWidth: area.lineWidth || this.props.lineWidth,
+				strokeWidth: area.lineWidth || this.props.lineWidth
 			});
 		});
 	}
@@ -266,13 +248,13 @@ export default class ImageMapper extends Component {
 			);
 		});
 	}
-	
+
 	renderChildren() {
 		if (this.props.renderChildren) {
 			return this.props.renderChildren();
 		}
 		return null;
-	};
+	}
 
 	render() {
 		return (
