@@ -15,6 +15,7 @@ export default class ImageMapper extends Component {
 			img: { ...absPos, zIndex: 1, userSelect: 'none' },
 			map: (props.onClick && { cursor: 'pointer' }) || undefined
 		};
+		this.state = { map: Object.assign({}, this.props.map), currentlyHoveredArea: undefined };
 		// Props watched for changes to trigger update
 		this.watchedProps = [
 			'active',
@@ -37,7 +38,7 @@ export default class ImageMapper extends Component {
 		return result;
 	}
 
-	UNSAFE_componentWillMount() {
+	componentDidMount() {
 		this.updateCacheMap();
 	}
 
@@ -52,7 +53,6 @@ export default class ImageMapper extends Component {
 			});
 		}
 		this.updateCacheMap();
-		this.initCanvases();
 		if (this.props.onExtendedAreasCreated) {
 			this.props.onExtendedAreasCreated(this.getExtendedAreas());
 		}
