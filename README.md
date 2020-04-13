@@ -2,10 +2,9 @@
 
 React Component to highlight interactive zones in images
 
-
 ## Demo & Examples
 
-Live demo: [coldiary.github.io/react-image-mapper](http://coldiary.github.io/react-image-mapper/)
+Live demo: [coldiary.github.io/react-image-mapper](http://arome.github.io/react-image-mapper/)
 
 To build the example locally, run:
 
@@ -26,7 +25,6 @@ You can also use the standalone build by including `dist/react-image-mapper.js` 
 npm install react-image-mapper --save
 ```
 
-
 ## Usage
 
 Import the component as you normally do, and add it wherever you like in your JSX views as below:
@@ -38,64 +36,79 @@ var ImageMapper = require('react-image-mapper');
 // ES6 import
 import ImageMapper from 'react-image-mapper';
 
-<ImageMapper src={IMAGE_URL} map={AREAS_MAP}/>
+<ImageMapper src={IMAGE_URL} map={AREAS_MAP} />;
 ```
 
 ### Properties
 
-|Props|type|Description|default|
-|---|---|---|---|
-|**src**|*string*|Image source url| **required**|
-|**map**|*string*|Mapping description| `{ name: generated, areas: [ ] }`<br/>(see below) |
-|**fillColor**|*string*|Fill color of the highlighted zone|`rgba(255, 255, 255, 0.5)`|
-|**strokeColor**|*string*|Border color of the highlighted zone|`rgba(0, 0, 0, 0.5)`|
-|**lineWidth**|*number*|Border thickness of the highlighted zone|`1`|
-|**width**|*number*|Image width|`Displayed width`|
-|**height**|*number*|Image height|`Displayed height`|
-|**active**|*bool*|Enable/Disable highlighting|`true`|
-|**imgWidth**|*number*|Original image width|`null`|
-|**children**|*node*|Child nodes to be rendered inside the container (after the image, the canvas and the map)|`null`|
+| Props           | type     | Description                                       | default                                                                        |
+| --------------- | -------- | ------------------------------------------------- | ------------------------------------------------------------------------------ |
+| **src**         | _string_ | Image source url                                  | **required**                                                                   |
+| **map**         | _object_ | Mapping description                               | `{ name: generated, areas: [ ] }`<br/>(see below)                              |
+| **fillColor**   | _string_ | Fill color of the highlighted zone                | `rgba(255, 255, 255, 0.5)`                                                     |
+| **strokeColor** | _string_ | Border color of the highlighted zone              | `rgba(0, 0, 0, 0.5)`                                                           |
+| **lineWidth**   | _number_ | Border thickness of the highlighted zone          | `1`                                                                            |
+| **width**       | _number_ | Image width                                       | `Displayed width`                                                              |
+| **height**      | _number_ | Image height                                      | `Displayed height`                                                             |
+| **active**      | _bool_   | Enable/Disable highlighting                       | `true`                                                                         |
+| **imgWidth**    | _number_ | Original image width                              | `null`                                                                         |
+| **path**        | _object_ | A path to draw between different areas on the map | `{line:{color:"red",strokeWidth:3},circle:{color:"red",radius:5}`<br/>(see below)|
 
-|Props callbacks|Called on|signature|
-|---|---|---|
-|**onLoad**|Image loading and canvas initialization completed|`(): void`|
-|**onExtendedAreasCreated**|The extended areas (with `scaledCoords` etc., see below) have been created|`(extendedAreas: obj[]): void`|
-|**onMouseEnter**|Hovering a zone in image|`(area: obj, index: num, event): void`|
-|**onMouseLeave**|Leaving a zone in image|`(area: obj, index: num, event): void`|
-|**onMouseMove**|Moving mouse on a zone in image|`(area: obj, index: num, event): void`|
-|**onMouseDown**|Pressing a mouse button on a zone in image|`(area: obj, index: num, event): void`|
-|**onMouseUp**|Releasing a mouse button while the pointer is located in a zone in the image|`(area: obj, index: num, event): void`|
-|**onClick**|Click on a zone in image|`(area: obj, index: num, event): void`|
-|**onImageClick**|Click outside of a zone in image|`(event): void`|
-|**onImageMouseMove**|Moving mouse on the image itself|`(event): void`|
-|**onImageMouseDown**|Pressing a mouse button on the image itself|`(event): void`|
-|**onImageMouseUp**|Releasing a mouse button while the pointer is located in the image itself|`(event): void`|
+| Props callbacks            | Called on                                                                    | signature                              |
+| -------------------------- | ---------------------------------------------------------------------------- | -------------------------------------- |
+| **onLoad**                 | Image loading and canvas initialization completed                            | `(): void`                             |
+| **onExtendedAreasCreated** | The extended areas (with `scaledCoords` etc., see below) have been created   | `(extendedAreas: obj[]): void`         |
+| **onMouseEnter**           | Hovering a zone in image                                                     | `(area: obj, index: num, event): void` |
+| **onMouseLeave**           | Leaving a zone in image                                                      | `(area: obj, index: num, event): void` |
+| **onMouseMove**            | Moving mouse on a zone in image                                              | `(area: obj, index: num, event): void` |
+| **onMouseDown**            | Pressing a mouse button on a zone in image                                   | `(area: obj, index: num, event): void` |
+| **onMouseUp**              | Releasing a mouse button while the pointer is located in a zone in the image | `(area: obj, index: num, event): void` |
+| **onClick**                | Click on a zone in image                                                     | `(area: obj, index: num, event): void` |
+| **onImageClick**           | Click outside of a zone in image                                             | `(event): void`                        |
+| **onImageMouseMove**       | Moving mouse on the image itself                                             | `(event): void`                        |
+| **onImageMouseDown**       | Pressing a mouse button on the image itself                                  | `(event): void`                        |
+| **onImageMouseUp**         | Releasing a mouse button while the pointer is located in the image itself    | `(event): void`                        |
 
 Map is an object describing highlighted areas in the image.
 
 Its structure is similar to the HTML syntax of mapping:
 
-- **map**: (*object*) Object to describe highlighted zones
-	- **name**: (*string*) Name of the map, used to bind to the image.
-	- **areas**: (*array*) Array of **area objects**
-		- **area**: (*object*) Shaped like below :
+- **map**: (_object_) Object to describe highlighted zones 
+	- **name**: (_string_) Name of the map, used to bind to the image. 
+	- **areas**: (_array_) Array of **area objects** 
+		- **area**: (_object_) Shaped like below :
 
-|Property| type|Description|
-|---|:---:|---|
-|**_id**|*string*|Uniquely identify an area. Index in array is used if this value is not provided.|
-|**shape**|*string*|Either `rect`, `circle` or `poly`|
-|**coords**|*array of number*|Coordinates delimiting the zone according to the specified shape: <ul><li>**rect**: `top-left-X`,`top-left-Y`,`bottom-right-X`,`bottom-right-Y`</li><li>**circle**: `center-X`,`center-Y`,`radius`</li><li>**poly**: Every point in the polygon path as `point-X`,`point-Y`,...</li></ul>|
-|**href**|*string*|Target link for a click in the zone (note that if you provide a onClick prop, `href` will be prevented)|
+| Property   |       type        | Description                                                                                                                                                                                                                                                                               |
+| ---------- | :---------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **\_id**   |     _string_      | Uniquely identify an area. Index in array is used if this value is not provided.                                                                                                                                                                                                          |
+| **shape**  |     _string_      | Either `rect`, `circle` or `poly`                                                                                                                                                                                                                                                         |
+| **coords** | _array of number_ | Coordinates delimiting the zone according to the specified shape: <ul><li>**rect**: `top-left-X`,`top-left-Y`,`bottom-right-X`,`bottom-right-Y`</li><li>**circle**: `center-X`,`center-Y`,`radius`</li><li>**poly**: Every point in the polygon path as `point-X`,`point-Y`,...</li></ul> |
+| **href**   |     _string_      | Target link for a click in the zone (note that if you provide a onClick prop, `href` will be prevented)                                                                                                                                                                                   |
+
+Path is an object describing the path to draw on the map between available areas on the map.
+
+Its structure is as follow:
+
+- **path**: (_object_) Object to describe the path to draw
+	- **line**: (_object_) Styling of the lines between two areas
+  	- **color**: (_string_) Color of the line
+  	- **strokeWidth**: (_number_) Stroke width of the line 
+	- **circle**: (_object_) Styling of the circles at the extremeties of a line 
+		- **color**: (_string_) Color of the point
+		- **radius**: (_number_) Radius of the circle to draw 
+	- **steps**: (_array of array_): An array of arrays containing a pair of number representing the pair of areas to draw a line between. The number represent the position of the area in the map. i.e. [[1,2], [2,3]] will draw a line from area 1 to 2 then from 2 to 3.
 
 When received from an event handler, an area is extended with the following properties:
 
-|Property| type|Description|
-|---|:---:|---|
-|**scaledCoords**|*array of number*|Scaled coordinates (see [Dynamic Scaling](#dynamic-scaling) below)|
-|**center**|*array of number*|Coordinates positionning the center or centroid of the area: `[X, Y]`|
+| Property         |       type        | Description                                                           |
+| ---------------- | :---------------: | --------------------------------------------------------------------- |
+| **scaledCoords** | _array of number_ | Scaled coordinates (see [Dynamic Scaling](#dynamic-scaling) below)    |
+| **center**       | _array of number_ | Coordinates positionning the center or centroid of the area: `[X, Y]` |
 
 ## Dynamic scaling
+
 When a parent component updates the **width** prop on `<ImageMapper>`, the area coordinates also have to be scaled. This can be accomplied by specifying both the new **width** and a constant **imgWidth**. **imgWidth** is the width of the original image. `<ImageMapper>` will calculate the new coordinates for each area. For example:
+
 ```javascript
 /* assume that image is actually 1500px wide */
 
@@ -115,7 +128,6 @@ When a parent component updates the **width** prop on `<ImageMapper>`, the area 
 
 To build, watch and serve the examples (which will also watch the component source), run `npm start`. If you just want to watch changes to `src` and rebuild `lib`, run `npm run watch` (this is useful if you are working with `npm link`).
 
-
 ### Notes & Contributions
 
 This a component is still a work in progress.
@@ -123,7 +135,6 @@ This a component is still a work in progress.
 If you encounter a bug of some kind, feel free to report the issue.
 
 If you'd like to improve this code or ask/advise for any improvement, feel free to comment it as well.
-
 
 ## License
 

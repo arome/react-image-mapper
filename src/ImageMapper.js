@@ -230,6 +230,51 @@ export default class ImageMapper extends Component {
 		});
 	}
 
+	renderPath() {
+		const { circle, line, steps } = this.props.path;
+		return (
+			steps.length > 0 &&
+			steps.map((step, index) => {
+				const { map, width, imgWidth } = this.props;
+				const fromArea = map.areas[step[0]];
+				const from = this.computeCenter(fromArea);
+				const toArea = map.areas[step[1]];
+				const to = this.computeCenter(toArea);
+				return (
+					<g className="segment-path" key={index}>
+						{index === 0 && (
+							<circle
+								cx={from[0]}
+								cy={from[1]}
+								r={(((circle && circle.radius) || 5) * width) / (imgWidth || width)}
+								stroke={(circle && circle.color) || 'red'}
+								strokeWidth="3"
+								fill={(circle && circle.color) || 'red'}
+							/>
+						)}
+						<line
+							strokeDasharray="6,6"
+							x1={from[0]}
+							y1={from[1]}
+							x2={to[0]}
+							y2={to[1]}
+							stroke={(line && line.color) || 'red'}
+							strokeWidth={(line && line.strokeWidth) || 3}
+						/>
+						<circle
+							cx={to[0]}
+							cy={to[1]}
+							r={(((circle && circle.radius) || 5) * width) / (imgWidth || width)}
+							stroke={(circle && circle.color) || 'red'}
+							strokeWidth="3"
+							fill={(circle && circle.color) || 'red'}
+						/>
+					</g>
+				);
+			})
+		);
+	}
+
 	renderAreas() {
 		return this.getExtendedAreas().map((extendedArea, index) => {
 			return (
@@ -273,6 +318,7 @@ export default class ImageMapper extends Component {
 				/>
 				<svg id="prefill-layer" ref={node => (this.prefillSvg = node)} style={this.styles.prefillCanvas}>
 					{this.renderPrefillSvgElements()}
+					{this.renderPath()}
 				</svg>
 				<svg id="hover-layer" ref={node => (this.hoverSvg = node)} style={this.styles.hoverCanvas}>
 					{this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()}
@@ -294,7 +340,8 @@ ImageMapper.defaultProps = {
 		areas: [],
 		name: 'image-map-' + Math.random()
 	},
-	strokeColor: 'rgba(0, 0, 0, 0.5)'
+	strokeColor: 'rgba(0, 0, 0, 0.5)',
+	path: { steps: [] }
 };
 
 ImageMapper.propTypes = {
@@ -306,6 +353,17 @@ ImageMapper.propTypes = {
 	src: PropTypes.string.isRequired,
 	strokeColor: PropTypes.string,
 	width: PropTypes.number,
+	path: PropTypes.shape({
+		circle: PropTypes.shape({
+			color: PropTypes.string,
+			radius: PropTypes.number
+		}),
+		line: {
+			color: PropTypes.string,
+			strokeWidth: PropTypes.number
+		},
+		steps: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
+	}),
 	renderChildren: PropTypes.func,
 
 	onClick: PropTypes.func,
