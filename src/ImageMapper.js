@@ -21,6 +21,7 @@ export default class ImageMapper extends Component {
 			'fillColor',
 			'height',
 			'imgWidth',
+			'imgHeight',
 			'lineWidth',
 			'src',
 			'strokeColor',
