@@ -1106,7 +1106,7 @@ var ImageMapper = (function (_Component) {
 		};
 		this.state = { map: _extends({}, this.props.map), currentlyHoveredArea: undefined };
 		// Props watched for changes to trigger update
-		this.watchedProps = ['active', 'fillColor', 'height', 'imgWidth', 'imgHeight', 'lineWidth', 'src', 'strokeColor', 'width', 'renderChildren'];
+		this.watchedProps = ['active', 'fillColor', 'height', 'imgWidth', 'imgHeight', 'lineWidth', 'src', 'strokeColor', 'width', 'path', 'renderChildren'];
 	}
 
 	_createClass(ImageMapper, [{
@@ -1511,10 +1511,10 @@ ImageMapper.propTypes = {
 			color: _propTypes2['default'].string,
 			radius: _propTypes2['default'].number
 		}),
-		line: {
+		line: _propTypes2['default'].shape({
 			color: _propTypes2['default'].string,
 			strokeWidth: _propTypes2['default'].number
-		},
+		}),
 		steps: _propTypes2['default'].arrayOf(_propTypes2['default'].arrayOf(_propTypes2['default'].number))
 	}),
 	renderChildren: _propTypes2['default'].func,
