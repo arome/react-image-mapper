@@ -27,6 +27,7 @@ export default class ImageMapper extends Component {
 			'src',
 			'strokeColor',
 			'width',
+			'path',
 			'renderChildren'
 		];
 	}
