@@ -53,7 +53,7 @@ import ImageMapper from 'react-image-mapper';
 | **active**      | _bool_   | Enable/Disable highlighting                       | `true`                                                                         |
 | **imgWidth**    | _number_ | Original image width                              | `null`                                                                         |
 | **imgHeight**    | _number_ | Original image height                              | `null`                                                                         |
-| **path**        | _object_ | A path to draw between different areas on the map | `{line:{color:"red",strokeWidth:3},circle:{color:"red",radius:5}`<br/>(see below)|
+| **paths**        | _array_ | Array of paths to draw between different areas on the map | `[{line:{color:"red",strokeWidth:3},circle:{color:"red",radius:5}]`<br/>(see below)|
 
 | Props callbacks            | Called on                                                                    | signature                              |
 | -------------------------- | ---------------------------------------------------------------------------- | -------------------------------------- |
@@ -86,9 +86,9 @@ Its structure is similar to the HTML syntax of mapping:
 | **coords** | _array of number_ | Coordinates delimiting the zone according to the specified shape: <ul><li>**rect**: `top-left-X`,`top-left-Y`,`bottom-right-X`,`bottom-right-Y`</li><li>**circle**: `center-X`,`center-Y`,`radius`</li><li>**poly**: Every point in the polygon path as `point-X`,`point-Y`,...</li></ul> |
 | **href**   |     _string_      | Target link for a click in the zone (note that if you provide a onClick prop, `href` will be prevented)                                                                                                                                                                                   |
 
-Path is an object describing the path to draw on the map between available areas on the map.
+Paths is an array of object describing the paths to draw on the map between available areas on the map.
 
-Its structure is as follow:
+The structure of a path is as follow:
 
 - **path**: (_object_) Object to describe the path to draw
 	- **line**: (_object_) Styling of the lines between two areas

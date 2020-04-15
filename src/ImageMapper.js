@@ -234,8 +234,12 @@ export default class ImageMapper extends Component {
 		});
 	}
 
-	renderPath() {
-		const { circle, line, steps } = this.props.path;
+	renderPaths() {
+		return this.props.paths.map(path => this.renderPath(path));
+	}
+
+	renderPath(path) {
+		const { circle, line, steps } = path;
 		return (
 			steps.length > 0 &&
 			steps.map((step, index) => {
@@ -322,7 +326,7 @@ export default class ImageMapper extends Component {
 				/>
 				<svg id="prefill-layer" ref={node => (this.prefillSvg = node)} style={this.styles.prefillCanvas}>
 					{this.renderPrefillSvgElements()}
-					{this.renderPath()}
+					{this.renderPaths()}
 				</svg>
 				<svg id="hover-layer" ref={node => (this.hoverSvg = node)} style={this.styles.hoverCanvas}>
 					{this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()}
@@ -345,7 +349,7 @@ ImageMapper.defaultProps = {
 		name: 'image-map-' + Math.random()
 	},
 	strokeColor: 'rgba(0, 0, 0, 0.5)',
-	path: { steps: [] }
+	paths: [{ steps: [] }]
 };
 
 ImageMapper.propTypes = {
@@ -358,17 +362,19 @@ ImageMapper.propTypes = {
 	src: PropTypes.string.isRequired,
 	strokeColor: PropTypes.string,
 	width: PropTypes.number,
-	path: PropTypes.shape({
-		circle: PropTypes.shape({
-			color: PropTypes.string,
-			radius: PropTypes.number
-		}),
-		line: PropTypes.shape({
-			color: PropTypes.string,
-			strokeWidth: PropTypes.number
-		}),
-		steps: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
-	}),
+	paths: PropTypes.arrayOf(
+		PropTypes.shape({
+			circle: PropTypes.shape({
+				color: PropTypes.string,
+				radius: PropTypes.number
+			}),
+			line: PropTypes.shape({
+				color: PropTypes.string,
+				strokeWidth: PropTypes.number
+			}),
+			steps: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
+		})
+	),
 	renderChildren: PropTypes.func,
 
 	onClick: PropTypes.func,
