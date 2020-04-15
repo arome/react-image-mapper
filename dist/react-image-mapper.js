@@ -1106,7 +1106,7 @@ var ImageMapper = (function (_Component) {
 		};
 		this.state = { map: _extends({}, this.props.map), currentlyHoveredArea: undefined };
 		// Props watched for changes to trigger update
-		this.watchedProps = ['active', 'fillColor', 'height', 'imgWidth', 'imgHeight', 'lineWidth', 'src', 'strokeColor', 'width', 'paths', 'renderChildren'];
+		this.watchedProps = ['active', 'fillColor', 'height', 'imgWidth', 'imgHeight', 'lineWidth', 'src', 'strokeColor', 'width', 'paths', 'hoveredAreas', 'renderChildren'];
 	}
 
 	_createClass(ImageMapper, [{
@@ -1411,21 +1411,35 @@ var ImageMapper = (function (_Component) {
 			});
 		}
 	}, {
+		key: 'renderHoveredAreas',
+		value: function renderHoveredAreas() {
+			var _this7 = this;
+
+			return this.props.hoveredAreas.map(function (area) {
+				return _this7.getMatchingSvgElementForShape(area.shape, area.coords, {
+					key: area._id || 'hover-area',
+					fill: area.fillColor || 'transparent',
+					stroke: area.strokeColor || _this7.props.strokeColor,
+					strokeWidth: area.lineWidth || _this7.props.lineWidth
+				});
+			});
+		}
+	}, {
 		key: 'renderAreas',
 		value: function renderAreas() {
-			var _this7 = this;
+			var _this8 = this;
 
 			return this.getExtendedAreas().map(function (extendedArea, index) {
 				return _react2['default'].createElement('area', {
 					key: extendedArea._id || index,
 					shape: extendedArea.shape,
 					coords: extendedArea.scaledCoords.join(','),
-					onMouseEnter: _this7.hoverOn.bind(_this7, extendedArea, index),
-					onMouseLeave: _this7.hoverOff.bind(_this7, extendedArea, index),
-					onMouseMove: _this7.mouseMove.bind(_this7, extendedArea, index),
-					onMouseDown: _this7.mouseDown.bind(_this7, extendedArea, index),
-					onMouseUp: _this7.mouseUp.bind(_this7, extendedArea, index),
-					onClick: _this7.click.bind(_this7, extendedArea, index),
+					onMouseEnter: _this8.hoverOn.bind(_this8, extendedArea, index),
+					onMouseLeave: _this8.hoverOff.bind(_this8, extendedArea, index),
+					onMouseMove: _this8.mouseMove.bind(_this8, extendedArea, index),
+					onMouseDown: _this8.mouseDown.bind(_this8, extendedArea, index),
+					onMouseUp: _this8.mouseUp.bind(_this8, extendedArea, index),
+					onClick: _this8.click.bind(_this8, extendedArea, index),
 					href: extendedArea.href
 				});
 			});
@@ -1441,12 +1455,12 @@ var ImageMapper = (function (_Component) {
 	}, {
 		key: 'render',
 		value: function render() {
-			var _this8 = this;
+			var _this9 = this;
 
 			return _react2['default'].createElement(
 				'div',
 				{ style: this.styles.container, ref: function (node) {
-						return _this8.container = node;
+						return _this9.container = node;
 					} },
 				_react2['default'].createElement('img', {
 					style: this.styles.img,
@@ -1454,7 +1468,7 @@ var ImageMapper = (function (_Component) {
 					useMap: '#' + this.state.map.name,
 					alt: '',
 					ref: function (node) {
-						return _this8.img = node;
+						return _this9.img = node;
 					},
 					onLoad: this.initCanvases,
 					onClick: this.imageClick.bind(this),
@@ -1465,7 +1479,7 @@ var ImageMapper = (function (_Component) {
 				_react2['default'].createElement(
 					'svg',
 					{ id: 'prefill-layer', ref: function (node) {
-							return _this8.prefillSvg = node;
+							return _this9.prefillSvg = node;
 						}, style: this.styles.prefillCanvas },
 					this.renderPrefillSvgElements(),
 					this.renderPaths()
@@ -1473,9 +1487,10 @@ var ImageMapper = (function (_Component) {
 				_react2['default'].createElement(
 					'svg',
 					{ id: 'hover-layer', ref: function (node) {
-							return _this8.hoverSvg = node;
+							return _this9.hoverSvg = node;
 						}, style: this.styles.hoverCanvas },
-					this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()
+					this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement(),
+					this.renderHoveredAreas()
 				),
 				_react2['default'].createElement(
 					'map',
@@ -1524,6 +1539,16 @@ ImageMapper.propTypes = {
 			strokeWidth: _propTypes2['default'].number
 		}),
 		steps: _propTypes2['default'].arrayOf(_propTypes2['default'].arrayOf(_propTypes2['default'].number))
+	})),
+	hoveredAreas: _propTypes2['default'].arrayOf(_propTypes2['default'].shape({
+		area: _propTypes2['default'].shape({
+			coords: _propTypes2['default'].arrayOf(_propTypes2['default'].number),
+			href: _propTypes2['default'].string,
+			shape: _propTypes2['default'].string,
+			preFillColor: _propTypes2['default'].string,
+			fillColor: _propTypes2['default'].string,
+			strokeColor: _propTypes2['default'].string
+		})
 	})),
 	renderChildren: _propTypes2['default'].func,
 
