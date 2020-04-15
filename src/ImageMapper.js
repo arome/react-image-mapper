@@ -28,6 +28,7 @@ export default class ImageMapper extends Component {
 			'strokeColor',
 			'width',
 			'paths',
+			'hoveredAreas',
 			'renderChildren'
 		];
 	}
@@ -283,6 +284,17 @@ export default class ImageMapper extends Component {
 		);
 	}
 
+	renderHoveredAreas() {
+		return this.props.hoveredAreas.map(area =>
+			this.getMatchingSvgElementForShape(area.shape, area.coords, {
+				key: area._id || 'hover-area',
+				fill: area.fillColor || 'transparent',
+				stroke: area.strokeColor || this.props.strokeColor,
+				strokeWidth: area.lineWidth || this.props.lineWidth
+			})
+		);
+	}
+
 	renderAreas() {
 		return this.getExtendedAreas().map((extendedArea, index) => {
 			return (
@@ -330,6 +342,7 @@ export default class ImageMapper extends Component {
 				</svg>
 				<svg id="hover-layer" ref={node => (this.hoverSvg = node)} style={this.styles.hoverCanvas}>
 					{this.state.currentlyHoveredArea && this.renderCurrentlyHoveredSvgElement()}
+					{this.renderHoveredAreas()}
 				</svg>
 				<map name={this.state.map.name} style={this.styles.map}>
 					{this.renderAreas()}
@@ -373,6 +386,18 @@ ImageMapper.propTypes = {
 				strokeWidth: PropTypes.number
 			}),
 			steps: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
+		})
+	),
+	hoveredAreas: PropTypes.arrayOf(
+		PropTypes.shape({
+			area: PropTypes.shape({
+				coords: PropTypes.arrayOf(PropTypes.number),
+				href: PropTypes.string,
+				shape: PropTypes.string,
+				preFillColor: PropTypes.string,
+				fillColor: PropTypes.string,
+				strokeColor: PropTypes.string
+			})
 		})
 	),
 	renderChildren: PropTypes.func,
