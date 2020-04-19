@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isEqual from 'react-fast-compare';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
 export default class ImageMapper extends Component {
 	constructor(props) {
@@ -12,7 +13,7 @@ export default class ImageMapper extends Component {
 			container: { position: 'relative' },
 			hoverCanvas: { ...canvas, zIndex: 3 },
 			prefillCanvas: { ...canvas, zIndex: 2 },
-			img: { ...absPos, zIndex: 1, userSelect: 'none' },
+			img: { ...absPos, zIndex: 1, userSelect: 'none', pointerEvents: 'all' },
 			map: (props.onClick && { cursor: 'pointer' }) || undefined
 		};
 		this.state = { map: Object.assign({}, this.props.map), currentlyHoveredArea: undefined };
@@ -323,6 +324,8 @@ export default class ImageMapper extends Component {
 
 	render() {
 		return (
+			<TransformWrapper>
+				<TransformComponent>
 			<div style={this.styles.container} ref={node => (this.container = node)}>
 				<img
 					style={this.styles.img}
@@ -349,6 +352,8 @@ export default class ImageMapper extends Component {
 				</map>
 				{this.renderChildren()}
 			</div>
+				</TransformComponent>
+			</TransformWrapper>
 		);
 	}
 }
